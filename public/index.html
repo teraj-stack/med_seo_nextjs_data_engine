@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MedSEO Next.js Data Engine &amp; Trener Agenta AI (Liquid Glass Studio)</title>
+  <style>
+    :root {
+      --bg-obsidian: #060b16;
+      --bg-deep: #0b1325;
+      --cyan: #00e5ff;
+      --lime: #b8ff01;
+      --indigo: #6a85ff;
+      --amber: #f5a65b;
+      --rose: #ff5d8f;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", sans-serif;
+      background:
+        radial-gradient(circle at 15% 15%, rgba(0, 229, 255, 0.14), transparent 40%),
+        radial-gradient(circle at 85% 20%, rgba(106, 133, 255, 0.16), transparent 45%),
+        radial-gradient(circle at 50% 90%, rgba(184, 255, 1, 0.08), transparent 45%),
+        var(--bg-obsidian);
+      color: var(--text-main);
+      min-height: 100vh;
+      padding: 28px;
+      line-height: 1.5;
+    }
+    .container { max-width: 1380px; margin: 0 auto; }
+
+    /* Liquid Glass Card */
+    .liquid-glass {
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.03));
+      backdrop-filter: blur(22px) saturate(160%);
+      -webkit-backdrop-filter: blur(22px) saturate(160%);
+      border-radius: 24px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      box-shadow:
+        inset 0 2px 3px rgba(255, 255, 255, 0.35),
+        inset 0 -3px 8px rgba(15, 23, 42, 0.45),
+        0 20px 42px -12px rgba(0, 0, 0, 0.65);
+    }
+
+    header.hero {
+      padding: 28px 32px;
+      margin-bottom: 24px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      background: rgba(0, 229, 255, 0.12);
+      color: var(--cyan);
+      border: 1px solid rgba(0, 229, 255, 0.35);
+      margin-bottom: 10px;
+    }
+    h1 { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; }
+    .subtitle { color: var(--text-muted); font-size: 14px; max-width: 780px; margin-top: 6px; }
+
+    .kpi-strip {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .kpi-card {
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+    .kpi-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text-muted); }
+    .kpi-value { font-size: 30px; font-weight: 800; margin-top: 6px; }
+    .kpi-sub { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+
+    .layout-grid {
+      display: grid;
+      grid-template-columns: 1.65fr 1fr;
+      gap: 24px;
+    }
+    @media (max-width: 1100px) {
+      .layout-grid { grid-template-columns: 1fr; }
+    }
+
+    .section-title {
+      font-size: 17px;
+      font-weight: 700;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .variant-card {
+      padding: 22px;
+      margin-bottom: 16px;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+    .variant-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(0, 229, 255, 0.45);
+    }
+    .variant-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+    .format-pill {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-weight: 700;
+      background: rgba(106, 133, 255, 0.2);
+      color: #c7d2fe;
+      border: 1px solid rgba(106, 133, 255, 0.4);
+    }
+    .reward-box {
+      text-align: right;
+      background: rgba(184, 255, 1, 0.1);
+      border: 1px solid rgba(184, 255, 1, 0.35);
+      padding: 8px 14px;
+      border-radius: 14px;
+    }
+    .reward-num { font-size: 22px; font-weight: 800; color: var(--lime); }
+
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
+      gap: 10px;
+      margin-top: 14px;
+      padding: 12px;
+      border-radius: 16px;
+      background: rgba(6, 11, 22, 0.55);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .m-item span { display: block; font-size: 11px; color: var(--text-muted); }
+    .m-item strong { font-size: 15px; color: #fff; }
+
+    .pattern-note {
+      margin-top: 12px;
+      font-size: 13px;
+      padding: 10px 14px;
+      border-radius: 12px;
+      background: rgba(0, 229, 255, 0.07);
+      border-left: 3px solid var(--cyan);
+      color: #e2e8f0;
+    }
+
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+    button.btn {
+      cursor: pointer;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.05));
+      color: #fff;
+      padding: 8px 13px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+      box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.4);
+      transition: all 0.15s ease;
+    }
+    button.btn:hover {
+      border-color: var(--cyan);
+      background: rgba(0, 229, 255, 0.18);
+    }
+    button.btn-lime {
+      background: linear-gradient(135deg, rgba(184, 255, 1, 0.25), rgba(0, 229, 255, 0.18));
+      border-color: rgba(184, 255, 1, 0.5);
+      color: var(--lime);
+    }
+    button.btn-rose {
+      background: rgba(255, 93, 143, 0.14);
+      border-color: rgba(255, 93, 143, 0.4);
+      color: #fecdd3;
+    }
+
+    .panel-box { padding: 22px; margin-bottom: 20px; }
+    .form-group { margin-bottom: 12px; }
+    .form-group label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 4px; }
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      background: rgba(6, 11, 22, 0.75);
+      color: #fff;
+      font-size: 13px;
+    }
+    pre.code-output {
+      margin-top: 12px;
+      padding: 14px;
+      border-radius: 14px;
+      background: #040811;
+      border: 1px solid rgba(0, 229, 255, 0.25);
+      color: #a5f3fc;
+      font-size: 12px;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      max-height: 420px;
+      overflow-y: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="liquid-glass hero">
+      <div>
+        <div class="badge">NEXT.JS 15 DATA ENGINE • SQLITE • NAVBOOST + E-E-A-T + CWV + GEO</div>
+        <h1>Baza Danych Efektywności Treści Medycznych &amp; Trener Agenta AI</h1>
+        <p class="subtitle">
+          System zbiera w czasie rzeczywistym sygnały behawioralne Google Search (<code>goodClicks</code>, <code>badClicks</code>, <code>lastLongestClicks</code>),
+          parametry techniczne Core Web Vitals oraz konwersje sprzedaży zabiegów, ucząc Agenta AI, które formaty treści sprzedają najskuteczniej.
+        </p>
+      </div>
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <button class="btn btn-lime" onclick="exportDatabaseJson()">⬇ Eksportuj bazę wiedzy Agenta (JSON)</button>
+        <button class="btn" onclick="resetToDefaultSeed()">↺ Resetuj dane bazowe</button>
+      </div>
+    </header>
+
+    <section class="kpi-strip" id="kpiStrip"></section>
+
+    <div class="layout-grid">
+      <div>
+        <div class="section-title">
+          <span>Ranking Formatów Treści wg Nagrody Agenta AI (RL Reward &amp; Konwersja Sprzedaży)</span>
+          <span style="font-size:12px; color:var(--cyan);">Aktualizacja w czasie rzeczywistym</span>
+        </div>
+        <div id="variantsContainer"></div>
+      </div>
+
+      <div>
+        <div class="liquid-glass panel-box">
+          <div class="section-title">
+            <span>🤖 Generator Strony przez Wyuczonego Agenta AI</span>
+          </div>
+          <p style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">
+            Agent automatycznie wybiera format treści o najwyższym współczynniku <code>agent_reward_signal</code> z bazy danych i generuje gotowy szkielet podstrony Next.js + JSON-LD + blok AI Overviews (130–170 słów).
+          </p>
+          <div class="form-group">
+            <label>Nazwa usługi / zabiegu medycznego:</label>
+            <input type="text" id="genProcedure" value="Laserowe leczenie szczeliny odbytu i hemoroidów LHP" />
+          </div>
+          <div class="form-group">
+            <label>Specjalista autoryzujący (E-E-A-T / PWZ):</label>
+            <input type="text" id="genDoctor" value="dr n. med. Jan Bujok — Chirurg, Proktolog" />
+          </div>
+          <div class="form-group">
+            <label>Miasto / Lokalizacja (Local Pack &amp; MedicalClinic):</label>
+            <input type="text" id="genCity" value="Warszawa Wilanów" />
+          </div>
+          <button class="btn btn-lime" style="width:100%;" onclick="generateAgentBlueprint()">
+            ⚡ Wygeneruj strukturę podstrony Next.js na bazie najlepszego wzorca
+          </button>
+          <pre class="code-output" id="agentOutput"></pre>
+        </div>
+
+        <div class="liquid-glass panel-box">
+          <div class="section-title">
+            <span>➕ Dodaj nowy wariant treści do bazy eksperymentalnej</span>
+          </div>
+          <div class="form-group">
+            <label>Nazwa procedury / podstrony:</label>
+            <input type="text" id="newProcName" placeholder="np. Diagnostyka anoskopowa 3D bez bólu" />
+          </div>
+          <div class="form-group">
+            <label>Format treści (testowany przez Agenta):</label>
+            <select id="newFormat">
+              <option value="INTERACTIVE_3D_PROCEDURE_MODEL">INTERACTIVE_3D_PROCEDURE_MODEL (Model 3D zabiegu)</option>
+              <option value="TRANSPARENT_PRICING_CALCULATOR">TRANSPARENT_PRICING_CALCULATOR (Kalkulator kosztów + porównanie)</option>
+              <option value="DOCTOR_QA_CASE_STUDY_BEFORE_AFTER">DOCTOR_QA_CASE_STUDY_BEFORE_AFTER (Q&amp;A Lekarza + Przed/Po)</option>
+              <option value="SPATIAL_3D_CLINIC_TOUR_AND_CHECKLIST">SPATIAL_3D_CLINIC_TOUR_AND_CHECKLIST (Wirtualny spacer 3D + komfort)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Długość pasażu pod H2 dla AI Overviews (optymalnie 130–170 słów):</label>
+            <input type="number" id="newWordCount" value="152" />
+          </div>
+          <button class="btn" style="width:100%;" onclick="addNewVariant()">
+            + Zapisz nowy wariant w bazie danych
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'MED_SEO_AGENT_DB_V1';
+
+    const DEFAULT_DATA = [
+      {
+        id: 1,
+        slug: 'laserowe-leczenie-hemoroidow-model-3d-przebieg',
+        service_category: 'Proktologia Laserowa',
+        procedure_name: 'Laserowa plastyka hemoroidów LHP (1470 nm)',
+        content_format: 'INTERACTIVE_3D_PROCEDURE_MODEL',
+        headline_hook_type: 'EMPATHY_DISCREET_PAIN_FREE',
+        author_name: 'dr n. med. Jan Bujok (Chirurg / Proktolog)',
+        author_pwz_verified: true,
+        clinical_citations_count: 7,
+        original_media_count: 11,
+        effort_score: 96,
+        aio_passage_word_count: 154,
+        schema_jsonld_types: ['MedicalClinic', 'Physician', 'MedicalProcedure', 'FAQPage', 'VideoObject'],
+        entity_density_score: 94,
+        click_depth_from_home: 1,
+        site_focus_alignment: 0.98,
+        site_radius_deviation: 0.03,
+        nav: {
+          impressions_count: 14800,
+          total_clicks: 1920,
+          good_clicks: 1765,
+          bad_clicks: 82,
+          last_longest_clicks: 1340,
+          avg_dwell_time_sec: 248,
+          avg_scroll_depth_pct: 86.5,
+          interactive_widget_uses: 1190,
+          bookings_completed: 148,
+          phone_click_calls: 94,
+          calculator_leads: 76,
+          estimated_revenue_pln: 412000
+        },
+        cwv: { lcp_ms: 1420, inp_ms: 68, cls_score: 0.02, ttfb_ms: 180 },
+        winning_pattern: 'Interaktywny model 3D przebiegu zabiegu + dyskretny ton empatyczny + bezpośredni blok odpowiedzi 154 słów pod H2 z autoryzacją lekarza PWZ eliminuje lęk pacjenta i generuje najwyższy lastLongestClicks (69.8%).'
+      },
+      {
+        id: 2,
+        slug: 'kalkulator-kosztow-i-porownanie-metod-proktologia',
+        service_category: 'Proktologia Laserowa',
+        procedure_name: 'Kwalifikacja i zabieg laserowy vs metoda klasyczna',
+        content_format: 'TRANSPARENT_PRICING_CALCULATOR',
+        headline_hook_type: 'FAST_RECOVERY_TIMELINE_ROI',
+        author_name: 'dr n. med. Jan Bujok (Chirurg / Proktolog)',
+        author_pwz_verified: true,
+        clinical_citations_count: 5,
+        original_media_count: 8,
+        effort_score: 92,
+        aio_passage_word_count: 146,
+        schema_jsonld_types: ['MedicalClinic', 'MedicalProcedure', 'FAQPage', 'OfferCatalog'],
+        entity_density_score: 89,
+        click_depth_from_home: 1,
+        site_focus_alignment: 0.96,
+        site_radius_deviation: 0.05,
+        nav: {
+          impressions_count: 11200,
+          total_clicks: 1540,
+          good_clicks: 1390,
+          bad_clicks: 95,
+          last_longest_clicks: 1020,
+          avg_dwell_time_sec: 215,
+          avg_scroll_depth_pct: 82.0,
+          interactive_widget_uses: 1080,
+          bookings_completed: 119,
+          phone_click_calls: 81,
+          calculator_leads: 112,
+          estimated_revenue_pln: 338000
+        },
+        cwv: { lcp_ms: 1310, inp_ms: 54, cls_score: 0.01, ttfb_ms: 165 },
+        winning_pattern: 'Interaktywna tabela porównawcza czasu rekonwalescencji (1 dzień vs 4 tygodnie) + przejrzysty kalkulator kosztów daje najwyższą konwersję łączną (20.26%).'
+      },
+      {
+        id: 3,
+        slug: 'ems-rf-sculpt-badania-kliniczne-efekty-przed-po',
+        service_category: 'Medycyna Estetyczna & Hi-Tech',
+        procedure_name: 'Modelowanie sylwetki EMS EMT RF Sculpt',
+        content_format: 'DOCTOR_QA_CASE_STUDY_BEFORE_AFTER',
+        headline_hook_type: 'CLINICAL_EFFICACY_DATA',
+        author_name: 'Zespół Medyczny BM Clinics (Weryfikacja Kliniczna)',
+        author_pwz_verified: true,
+        clinical_citations_count: 6,
+        original_media_count: 14,
+        effort_score: 88,
+        aio_passage_word_count: 162,
+        schema_jsonld_types: ['MedicalClinic', 'MedicalProcedure', 'FAQPage', 'ImageGallery'],
+        entity_density_score: 87,
+        click_depth_from_home: 1,
+        site_focus_alignment: 0.92,
+        site_radius_deviation: 0.08,
+        nav: {
+          impressions_count: 9600,
+          total_clicks: 1210,
+          good_clicks: 1045,
+          bad_clicks: 110,
+          last_longest_clicks: 740,
+          avg_dwell_time_sec: 184,
+          avg_scroll_depth_pct: 78.0,
+          interactive_widget_uses: 690,
+          bookings_completed: 78,
+          phone_click_calls: 49,
+          calculator_leads: 44,
+          estimated_revenue_pln: 196000
+        },
+        cwv: { lcp_ms: 1780, inp_ms: 92, cls_score: 0.04, ttfb_ms: 210 },
+        winning_pattern: 'Suwak autorskich zdjęć Przed/Po z parametrami energii RF + sekcja Q&A obalająca mity przyciąga ruch z AI Overviews.'
+      },
+      {
+        id: 4,
+        slug: 'wirtualny-spacer-3d-przygotowanie-do-wizyty-w-klinice',
+        service_category: 'Nawigacja Przestrzenna & Komfort Pacjenta',
+        procedure_name: 'Pierwsza wizyta proktologiczna — dyskrecja i nawigacja 3D',
+        content_format: 'SPATIAL_3D_CLINIC_TOUR_AND_CHECKLIST',
+        headline_hook_type: 'EMPATHY_ZERO_STRESS_ONBOARDING',
+        author_name: 'dr n. med. Jan Bujok (Chirurg / Proktolog)',
+        author_pwz_verified: true,
+        clinical_citations_count: 3,
+        original_media_count: 9,
+        effort_score: 94,
+        aio_passage_word_count: 148,
+        schema_jsonld_types: ['MedicalClinic', 'Physician', 'FAQPage', 'Place'],
+        entity_density_score: 84,
+        click_depth_from_home: 2,
+        site_focus_alignment: 0.95,
+        site_radius_deviation: 0.05,
+        nav: {
+          impressions_count: 6400,
+          total_clicks: 890,
+          good_clicks: 812,
+          bad_clicks: 41,
+          last_longest_clicks: 615,
+          avg_dwell_time_sec: 262,
+          avg_scroll_depth_pct: 91.0,
+          interactive_widget_uses: 580,
+          bookings_completed: 71,
+          phone_click_calls: 52,
+          calculator_leads: 19,
+          estimated_revenue_pln: 178000
+        },
+        cwv: { lcp_ms: 1890, inp_ms: 115, cls_score: 0.03, ttfb_ms: 195 },
+        winning_pattern: 'Wirtualny podgląd gabinetu i prywatnego wejścia obniża barierę wstydu pacjenta i generuje najdłuższy czas zaangażowania (262s).'
+      },
+      {
+        id: 5,
+        slug: 'ogolny-artykul-blogowy-co-to-sa-hemoroidy',
+        service_category: 'Blog Ogólny (Wzorzec Kontrolny Negatywny)',
+        procedure_name: 'Ogólny artykuł informacyjny bez interakcji i bez ceny',
+        content_format: 'GENERIC_TEXT_BLOG_POST',
+        headline_hook_type: 'GENERIC_DEFINITION_TITLE',
+        author_name: 'Redakcja (Brak encji lekarza)',
+        author_pwz_verified: false,
+        clinical_citations_count: 0,
+        original_media_count: 0,
+        effort_score: 22,
+        aio_passage_word_count: 310,
+        schema_jsonld_types: ['Article'],
+        entity_density_score: 38,
+        click_depth_from_home: 3,
+        site_focus_alignment: 0.65,
+        site_radius_deviation: 0.35,
+        nav: {
+          impressions_count: 8200,
+          total_clicks: 410,
+          good_clicks: 115,
+          bad_clicks: 265,
+          last_longest_clicks: 42,
+          avg_dwell_time_sec: 29,
+          avg_scroll_depth_pct: 31.0,
+          interactive_widget_uses: 0,
+          bookings_completed: 3,
+          phone_click_calls: 4,
+          calculator_leads: 0,
+          estimated_revenue_pln: 4200
+        },
+        cwv: { lcp_ms: 3450, inp_ms: 280, cls_score: 0.19, ttfb_ms: 520 },
+        winning_pattern: 'NEGATYWNY WZORZEC: Brak weryfikacji lekarza PWZ, brak interaktywnego kalkulatora/3D i zbyt długi pasaż (310 słów) powodują 69% badClicks (pogo-sticking).'
+      }
+    ];
+
+    function loadVariants() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        return raw ? JSON.parse(raw) : JSON.parse(JSON.stringify(DEFAULT_DATA));
+      } catch (e) {
+        return JSON.parse(JSON.stringify(DEFAULT_DATA));
+      }
+    }
+
+    function saveVariants(list) {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+      } catch (e) {}
+    }
+
+    function computeScores(v) {
+      const nav = v.nav;
+      const cwv = v.cwv;
+      const totalC = Math.max(nav.total_clicks, 1);
+      const satRatio = nav.good_clicks / Math.max(nav.good_clicks + nav.bad_clicks, 1);
+      const llcRatio = nav.last_longest_clicks / totalC;
+      const dwellNorm = Math.min(nav.avg_dwell_time_sec / 180.0, 1.0);
+      const navboostScore = satRatio * 50.0 + llcRatio * 30.0 + dwellNorm * 20.0;
+
+      const pwzBonus = v.author_pwz_verified ? 25.0 : 0.0;
+      const citationsNorm = Math.min(v.clinical_citations_count / 6.0, 1.0) * 20.0;
+      const mediaNorm = Math.min(v.original_media_count / 8.0, 1.0) * 20.0;
+      const effortNorm = (v.effort_score / 100.0) * 35.0;
+      const eeatScore = pwzBonus + citationsNorm + mediaNorm + effortNorm;
+
+      const wc = v.aio_passage_word_count;
+      const passageScore = (wc >= 130 && wc <= 170) ? 40.0 : ((wc >= 110 && wc <= 195) ? 25.0 : 10.0);
+      const schemaScore = Math.min(v.schema_jsonld_types.length / 4.0, 1.0) * 30.0;
+      const entityScore = (v.entity_density_score / 100.0) * 30.0;
+      const geoScore = passageScore + schemaScore + entityScore;
+
+      const lcpOk = cwv.lcp_ms <= 2500 ? 40.0 : (cwv.lcp_ms <= 4000 ? 20.0 : 0.0);
+      const inpOk = cwv.inp_ms <= 200 ? 35.0 : (cwv.inp_ms <= 500 ? 15.0 : 0.0);
+      const clsOk = cwv.cls_score <= 0.10 ? 25.0 : (cwv.cls_score <= 0.25 ? 10.0 : 0.0);
+      const cwvScore = lcpOk + inpOk + clsOk;
+
+      const depthScore = v.click_depth_from_home === 1 ? 40.0 : (v.click_depth_from_home === 2 ? 25.0 : 5.0);
+      const focusScore = v.site_focus_alignment * 40.0;
+      const radiusScore = Math.max(0.0, (1.0 - v.site_radius_deviation) * 20.0);
+      const domainScore = depthScore + focusScore + radiusScore;
+
+      const compositeSeo =
+        navboostScore * 0.35 +
+        eeatScore * 0.25 +
+        geoScore * 0.20 +
+        cwvScore * 0.10 +
+        domainScore * 0.10;
+
+      const leads = nav.bookings_completed + nav.phone_click_calls + nav.calculator_leads;
+      const convRate = (leads / totalC) * 100.0;
+      const widgetRate = (nav.interactive_widget_uses / totalC) * 100.0;
+      const salesScore = Math.min(100.0, convRate * 6.2 + widgetRate * 0.75);
+      const reward = ((salesScore * 0.60) + (compositeSeo * 0.40)) / 100.0;
+
+      return {
+        compositeSeo: compositeSeo.toFixed(1),
+        salesScore: salesScore.toFixed(1),
+        reward: reward.toFixed(3),
+        convRate: convRate.toFixed(2),
+        satRatio: (satRatio * 100.0).toFixed(1),
+        leads
+      };
+    }
+
+    let variants = loadVariants();
+
+    function renderAll() {
+      const scored = variants.map(v => ({ ...v, _s: computeScores(v) }))
+        .sort((a, b) => parseFloat(b._s.reward) - parseFloat(a._s.reward));
+
+      const best = scored[0];
+      const totalRev = scored.reduce((acc, x) => acc + x.nav.estimated_revenue_pln, 0);
+      const totalLeads = scored.reduce((acc, x) => acc + x._s.leads, 0);
+
+      document.getElementById('kpiStrip').innerHTML = `
+        <div class="liquid-glass kpi-card">
+          <div class="kpi-label">Najbardziej efektywny format sprzedaży</div>
+          <div class="kpi-value" style="font-size:18px; color:var(--lime); margin-top:10px;">${best.content_format}</div>
+          <div class="kpi-sub">Nagroda Agenta RL: <strong>${best._s.reward}</strong> | SEO: ${best._s.compositeSeo}/100</div>
+        </div>
+        <div class="liquid-glass kpi-card">
+          <div class="kpi-label">Łączna liczba pozyskanych pacjentów (Leads)</div>
+          <div class="kpi-value" style="color:var(--cyan);">${totalLeads}</div>
+          <div class="kpi-sub">Wizyty online + Telefony + Kalkulator wycen</div>
+        </div>
+        <div class="liquid-glass kpi-card">
+          <div class="kpi-label">Estymowany przychód z badanych treści</div>
+          <div class="kpi-value">${totalRev.toLocaleString('pl-PL')} PLN</div>
+          <div class="kpi-sub">Śledzenie atrybucji per format treści</div>
+        </div>
+        <div class="liquid-glass kpi-card">
+          <div class="kpi-label">Złoty standard pasażu AI Overviews (GEO)</div>
+          <div class="kpi-value" style="color:#c7d2fe;">130–170 słów</div>
+          <div class="kpi-sub">+ Schema.org MedicalProcedure &amp; PWZ</div>
+        </div>
+      `;
+
+      const container = document.getElementById('variantsContainer');
+      container.innerHTML = scored.map((v, idx) => `
+        <article class="liquid-glass variant-card">
+          <div class="variant-header">
+            <div>
+              <span class="format-pill">#${idx + 1} • ${v.content_format}</span>
+              <span style="font-size:12px; color:var(--text-muted); margin-left:8px;">${v.service_category}</span>
+              <h3 style="font-size:18px; margin-top:6px;">${v.procedure_name}</h3>
+              <div style="font-size:12px; color:var(--text-muted); margin-top:2px;">
+                Autor (E-E-A-T): <strong>${v.author_name}</strong> ${v.author_pwz_verified ? '✅ PWZ' : '⚠️ Brak PWZ'}
+                • Pasaż AIO: <strong>${v.aio_passage_word_count} słów</strong>
+                • Kliknięcia od Home: <strong>${v.click_depth_from_home}</strong>
+              </div>
+            </div>
+            <div class="reward-box">
+              <div style="font-size:10px; text-transform:uppercase; color:var(--text-muted);">RL Agent Reward</div>
+              <div class="reward-num">${v._s.reward}</div>
+            </div>
+          </div>
+
+          <div class="metrics-grid">
+            <div class="m-item">
+              <span>Konwersja Sprzedaży</span>
+              <strong style="color:var(--cyan);">${v._s.convRate}% (${v._s.leads} pacj.)</strong>
+            </div>
+            <div class="m-item">
+              <span>NavBoost GoodClicks</span>
+              <strong style="color:var(--lime);">${v._s.satRatio}% (${v.nav.good_clicks}/${v.nav.total_clicks})</strong>
+            </div>
+            <div class="m-item">
+              <span>lastLongestClicks</span>
+              <strong>${v.nav.last_longest_clicks} sesji</strong>
+            </div>
+            <div class="m-item">
+              <span>Śr. czas (Dwell Time)</span>
+              <strong>${v.nav.avg_dwell_time_sec} s</strong>
+            </div>
+            <div class="m-item">
+              <span>Core Web Vitals</span>
+              <strong>LCP ${v.cwv.lcp_ms}ms / INP ${v.cwv.inp_ms}ms</strong>
+            </div>
+            <div class="m-item">
+              <span>Wynik Google SEO</span>
+              <strong>${v._s.compositeSeo} / 100</strong>
+            </div>
+            <div class="m-item">
+              <span>Przychód z podstrony</span>
+              <strong>${v.nav.estimated_revenue_pln.toLocaleString('pl-PL')} PLN</strong>
+            </div>
+          </div>
+
+          <div class="pattern-note">
+            <strong>Wniosek wyuczony przez Agenta:</strong> ${v.winning_pattern}
+          </div>
+
+          <div class="btn-row">
+            <button class="btn btn-lime" onclick="recordSignal(${v.id}, 'BOOKING')">
+              + Umówiona wizyta (+goodClick, +lastLongestClick, +2800 PLN)
+            </button>
+            <button class="btn" onclick="recordSignal(${v.id}, 'PHONE')">
+              📞 Kliknięcie w telefon recepcji (+goodClick, +1200 PLN)
+            </button>
+            <button class="btn" onclick="recordSignal(${v.id}, 'WIDGET_3D')">
+              🧊 Interakcja z modelem 3D / kalkulatorem (+dwellTime)
+            </button>
+            <button class="btn btn-rose" onclick="recordSignal(${v.id}, 'BAD_CLICK')">
+              ↩ Szybkie cofnięcie do Google (badClick / pogo-sticking)
+            </button>
+          </div>
+        </article>
+      `).join('');
+    }
+
+    function recordSignal(id, type) {
+      variants = variants.map(v => {
+        if (v.id !== id) return v;
+        const nav = { ...v.nav };
+        if (type === 'BOOKING') {
+          nav.total_clicks += 1;
+          nav.good_clicks += 1;
+          nav.last_longest_clicks += 1;
+          nav.interactive_widget_uses += 1;
+          nav.bookings_completed += 1;
+          nav.estimated_revenue_pln += 2800;
+        } else if (type === 'PHONE') {
+          nav.total_clicks += 1;
+          nav.good_clicks += 1;
+          nav.last_longest_clicks += 1;
+          nav.phone_click_calls += 1;
+          nav.estimated_revenue_pln += 1200;
+        } else if (type === 'WIDGET_3D') {
+          nav.interactive_widget_uses += 1;
+          nav.avg_dwell_time_sec = Math.min(420, nav.avg_dwell_time_sec + 4);
+        } else if (type === 'BAD_CLICK') {
+          nav.total_clicks += 1;
+          nav.bad_clicks += 1;
+        }
+        return { ...v, nav };
+      });
+      saveVariants(variants);
+      renderAll();
+    }
+
+    function addNewVariant() {
+      const name = document.getElementById('newProcName').value.trim();
+      const format = document.getElementById('newFormat').value;
+      const wc = parseInt(document.getElementById('newWordCount').value, 10) || 150;
+      if (!name) return;
+
+      const newEntry = {
+        id: Date.now(),
+        slug: name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+        service_category: 'Nowy Eksperyment Medyczny',
+        procedure_name: name,
+        content_format: format,
+        headline_hook_type: 'EMPATHY_DISCREET_PAIN_FREE',
+        author_name: 'dr n. med. Jan Bujok (PWZ Zweryfikowany)',
+        author_pwz_verified: true,
+        clinical_citations_count: 5,
+        original_media_count: 8,
+        effort_score: 90,
+        aio_passage_word_count: wc,
+        schema_jsonld_types: ['MedicalClinic', 'Physician', 'MedicalProcedure', 'FAQPage'],
+        entity_density_score: 90,
+        click_depth_from_home: 1,
+        site_focus_alignment: 0.96,
+        site_radius_deviation: 0.04,
+        nav: {
+          impressions_count: 100,
+          total_clicks: 25,
+          good_clicks: 23,
+          bad_clicks: 2,
+          last_longest_clicks: 18,
+          avg_dwell_time_sec: 210,
+          avg_scroll_depth_pct: 84,
+          interactive_widget_uses: 16,
+          bookings_completed: 3,
+          phone_click_calls: 2,
+          calculator_leads: 1,
+          estimated_revenue_pln: 10800
+        },
+        cwv: { lcp_ms: 1380, inp_ms: 62, cls_score: 0.02, ttfb_ms: 175 },
+        winning_pattern: 'Nowo dodany wariant eksperymentalny — zbiera dane behawioralne NavBoost i konwersje sprzedaży.'
+      };
+      variants.push(newEntry);
+      saveVariants(variants);
+      document.getElementById('newProcName').value = '';
+      renderAll();
+    }
+
+    function generateAgentBlueprint() {
+      const scored = variants.map(v => ({ ...v, _s: computeScores(v) }))
+        .sort((a, b) => parseFloat(b._s.reward) - parseFloat(a._s.reward));
+      const winner = scored[0];
+      const proc = document.getElementById('genProcedure').value.trim();
+      const doc = document.getElementById('genDoctor').value.trim();
+      const city = document.getElementById('genCity').value.trim();
+
+      const blueprint = {
+        agentDecision: {
+          selectedWinningFormat: winner.content_format,
+          historicalRewardScore: winner._s.reward,
+          historicalConversionRate: winner._s.convRate + '%',
+          navBoostTarget: 'goodClicks > 92%, lastLongestClicks > 65%, dwellTime > 210s',
+          clickDepthFromHomepage: 1
+        },
+        nextjsPageStructure: {
+          h1: `${proc} — ${city} (Małoinwazyjny zabieg 1 dnia)`,
+          h2_aio_question: `Jak przebiega ${proc.toLowerCase()} i ile trwa rekonwalescencja?`,
+          aio_semantic_passage_150_words:
+            `${proc} w klinice w lokalizacji ${city} to małoinwazyjna procedura wykonywana w znieczuleniu miejscowym lub krótkiej sedacji, trwająca średnio 25–35 minut. Wiązka światłowodu precyzyjnie zamyka naczynia guzka krwawniczego od wewnątrz bez nacinania śluzówki i bez zakładania szwów. Dzięki temu pacjent wraca do domu tego samego dnia, a do pełnej aktywności zawodowej zazwyczaj po 24–48 godzinach. Kwalifikację oraz zabieg przeprowadza ${doc} po wykonaniu bezbolesnej diagnostyki obrazowej.`,
+          interactiveModuleToEmbed: winner.content_format === 'INTERACTIVE_3D_PROCEDURE_MODEL'
+            ? '<Interactive3DProcedureViewer + DiscreetBookingCalculator />'
+            : '<TransparentPricingAndRecoveryComparisonTable />',
+          eeatTrustSignals: {
+            verifiedPhysician: doc,
+            originalClinicPhotosRequired: 8,
+            clinicalCitationsRequired: 5
+          }
+        },
+        schemaOrgJsonLd: {
+          "@context": "https://schema.org",
+          "@type": "MedicalProcedure",
+          "name": proc,
+          "procedureType": "https://schema.org/NoninvasiveProcedure",
+          "performer": {
+            "@type": "Physician",
+            "name": doc,
+            "medicalSpecialty": "Proctology"
+          },
+          "location": {
+            "@type": "MedicalClinic",
+            "name": `BM Clinics — ${city}`
+          }
+        }
+      };
+
+      document.getElementById('agentOutput').textContent = JSON.stringify(blueprint, null, 2);
+    }
+
+    function exportDatabaseJson() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(variants, null, 2));
+      const a = document.createElement('a');
+      a.setAttribute("href", dataStr);
+      a.setAttribute("download", "med_seo_agent_training_database.json");
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    }
+
+    function resetToDefaultSeed() {
+      localStorage.removeItem(STORAGE_KEY);
+      variants = JSON.parse(JSON.stringify(DEFAULT_DATA));
+      renderAll();
+      generateAgentBlueprint();
+    }
+
+    renderAll();
+    generateAgentBlueprint();
+  </script>
+</body>
+</html>
