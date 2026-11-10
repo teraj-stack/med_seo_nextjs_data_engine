@@ -93,3 +93,4 @@ CREATE TABLE IF NOT EXISTS agent_learning_dataset (
     recommended_action TEXT NOT NULL,        -- np. 'SCALE_FORMAT', 'OPTIMIZE_AIO_PASSAGE', 'REWRITE_HOOK_REDUCE_BAD_CLICKS'
     evaluated_at TEXT DEFAULT (datetime('now'))
 );
+

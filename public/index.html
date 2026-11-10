@@ -223,7 +223,7 @@
     }
   </style>
 </head>
-<body>
+<body><aside style="padding:16px;background:#fff3cd;color:#332900">ARCHIWALNA DEMONSTRACJA — syntetyczne dane, własna punktacja, brak pomiaru rankingu Google i brak treningu AI. Właściwa aplikacja: repozytorium bmclinic.co.</aside>
   <div class="container">
     <header class="liquid-glass hero">
       <div>
@@ -740,53 +740,7 @@
     }
 
     function generateAgentBlueprint() {
-      const scored = variants.map(v => ({ ...v, _s: computeScores(v) }))
-        .sort((a, b) => parseFloat(b._s.reward) - parseFloat(a._s.reward));
-      const winner = scored[0];
-      const proc = document.getElementById('genProcedure').value.trim();
-      const doc = document.getElementById('genDoctor').value.trim();
-      const city = document.getElementById('genCity').value.trim();
-
-      const blueprint = {
-        agentDecision: {
-          selectedWinningFormat: winner.content_format,
-          historicalRewardScore: winner._s.reward,
-          historicalConversionRate: winner._s.convRate + '%',
-          navBoostTarget: 'goodClicks > 92%, lastLongestClicks > 65%, dwellTime > 210s',
-          clickDepthFromHomepage: 1
-        },
-        nextjsPageStructure: {
-          h1: `${proc} — ${city} (Małoinwazyjny zabieg 1 dnia)`,
-          h2_aio_question: `Jak przebiega ${proc.toLowerCase()} i ile trwa rekonwalescencja?`,
-          aio_semantic_passage_150_words:
-            `${proc} w klinice w lokalizacji ${city} to małoinwazyjna procedura wykonywana w znieczuleniu miejscowym lub krótkiej sedacji, trwająca średnio 25–35 minut. Wiązka światłowodu precyzyjnie zamyka naczynia guzka krwawniczego od wewnątrz bez nacinania śluzówki i bez zakładania szwów. Dzięki temu pacjent wraca do domu tego samego dnia, a do pełnej aktywności zawodowej zazwyczaj po 24–48 godzinach. Kwalifikację oraz zabieg przeprowadza ${doc} po wykonaniu bezbolesnej diagnostyki obrazowej.`,
-          interactiveModuleToEmbed: winner.content_format === 'INTERACTIVE_3D_PROCEDURE_MODEL'
-            ? '<Interactive3DProcedureViewer + DiscreetBookingCalculator />'
-            : '<TransparentPricingAndRecoveryComparisonTable />',
-          eeatTrustSignals: {
-            verifiedPhysician: doc,
-            originalClinicPhotosRequired: 8,
-            clinicalCitationsRequired: 5
-          }
-        },
-        schemaOrgJsonLd: {
-          "@context": "https://schema.org",
-          "@type": "MedicalProcedure",
-          "name": proc,
-          "procedureType": "https://schema.org/NoninvasiveProcedure",
-          "performer": {
-            "@type": "Physician",
-            "name": doc,
-            "medicalSpecialty": "Proctology"
-          },
-          "location": {
-            "@type": "MedicalClinic",
-            "name": `BM Clinics — ${city}`
-          }
-        }
-      };
-
-      document.getElementById('agentOutput').textContent = JSON.stringify(blueprint, null, 2);
+      document.getElementById('agentOutput').textContent = 'DEMONSTRACJA: dane i punktacja są syntetyczne. Generator opisów medycznych został wyłączony. Twórz i zatwierdzaj treści w panelu głównej aplikacji BM Clinic.';
     }
 
     function exportDatabaseJson() {
@@ -811,3 +765,4 @@
   </script>
 </body>
 </html>
+
