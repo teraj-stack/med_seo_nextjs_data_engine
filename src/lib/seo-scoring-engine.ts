@@ -120,3 +120,4 @@ export function computeMedicalSeoAndAgentReward(
     navboostSatisfactionRatio: Number((satRatio * 100.0).toFixed(2)),
   };
 }
+

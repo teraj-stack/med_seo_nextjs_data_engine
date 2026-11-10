@@ -137,6 +137,7 @@ export default function MedSeoAgentDatabasePage() {
         <span className="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-cyan-500/10 text-cyan-300 border border-cyan-400/30 mb-3">
           NEXT.JS 15 • GOOGLE CONTENT WAREHOUSE + NAVBOOST + E-E-A-T + GEO ENGINE
         </span>
+        <p role="note">ARCHIWALNA DEMONSTRACJA — dane syntetyczne, brak pomiaru Google i brak treningu AI. Korzystaj z głównej aplikacji BM Clinic.</p>
         <h1 className="text-3xl font-bold tracking-tight">
           Baza Danych Efektywności Treści Medycznych &amp; Trener Agenta AI
         </h1>
@@ -208,3 +209,4 @@ export default function MedSeoAgentDatabasePage() {
     </main>
   );
 }
+

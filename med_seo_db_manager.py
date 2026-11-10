@@ -108,11 +108,11 @@ def init_and_seed_db():
     with open(SCHEMA_PATH, "r", encoding="utf-8") as f:
         cur.executescript(f.read())
 
-    # Czyścimy dane testowe przed ponownym zasiewem
-    cur.execute("DELETE FROM agent_learning_dataset")
-    cur.execute("DELETE FROM cwv_technical_metrics")
-    cur.execute("DELETE FROM navboost_conversion_metrics")
-    cur.execute("DELETE FROM medical_content_variants")
+    # Never replace existing rows during a demo seed run.
+    if cur.execute("SELECT COUNT(*) FROM medical_content_variants").fetchone()[0]:
+        conn.close()
+        print("[OK] Existing data preserved; demo seed skipped.")
+        return
 
     seed_variants = [
         {
@@ -421,3 +421,4 @@ def init_and_seed_db():
 
 if __name__ == "__main__":
     init_and_seed_db()
+
