@@ -9,12 +9,23 @@ Silnik bazodanowy i analityczny **Next.js 15 + SQLite (WAL) + Python RL Trainer*
 
 ---
 
+## Spis Treści
+
+1. [Architektura Przepływu Danych i Treningu Agenta AI](#1-architektura-przepływu-danych-i-treningu-agenta-ai)
+2. [Model Matematyczny Oceny SEO i Konwersji Medycznej](#2-model-matematyczny-oceny-seo-i-konwersji-medycznej)
+3. [Schemat Bazy Danych SQLite (`db/schema.sql`)](#3-schemat-bazy-danych-sqlite-dbschemasql)
+4. [Struktura Projektu](#4-struktura-projektu)
+5. [Szybki Start](#5-szybki-start)
+
+---
+
 ## 1. Architektura Przepływu Danych i Treningu Agenta AI
 
 ```mermaid
 flowchart LR
     Seed["med_seo_db_manager.py\nInicjalizacja SQLite & Wyliczanie Nagrody RL"] --> DB[("db/med_seo_intelligence.sqlite\n4 Tabele Relacyjne WAL")]
-    DB --> Snapshot["public/agent_training_snapshot.json\nZbiór Treningowy dla Agenta AI"]
+    DB --> Snapshot["public/agent_knowledge_state.json\nZbiór Treningowy dla Agenta AI"]
+    DB --> Studio["public/index.html\nLiquid Glass Studio Dashboard"]
     DB --> NextApp["Next.js 15 Dashboard\nsrc/app/page.tsx"]
     NextApp --> TelemetryAPI["POST /api/telemetry\nRejestracja sygnałów NavBoost & Konwersji"]
     TelemetryAPI --> DB
@@ -72,7 +83,8 @@ MED_SEO_NEXTJS_DATA_ENGINE/
 │   ├── schema.sql                      # Definicja 4 tabel SQLite (tryb WAL)
 │   └── med_seo_intelligence.sqlite     # Wygenerowana baza danych SQLite
 ├── public/
-│   └── agent_training_snapshot.json    # Eksport JSON z rankingiem archetypów treści dla Agenta AI
+│   ├── agent_knowledge_state.json      # Eksport JSON z rankingiem archetypów treści dla Agenta AI
+│   └── index.html                      # Samodzielny panel analityczny Liquid Glass Studio (HTML5/JS)
 ├── src/
 │   ├── app/
 │   │   ├── api/telemetry/route.ts      # Punkt końcowy REST API do zapisu telemetrii NavBoost i konwersji
